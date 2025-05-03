@@ -16,9 +16,15 @@ using UnityEngine.UI;
 
 public class PrometeoCarController : MonoBehaviour
 {
-
+    //ML-Agent Control
+    
+      [Space(20)]
+      //[Header("ML-Agent Control")]
+      [Space(10)]
+      public bool useAgentControl = false; // Set this to TRUE in the Inspector if an ML-Agent is controlling this car
+    
     //CAR SETUP
-
+    
       [Space(20)]
       //[Header("CAR SETUP")]
       [Space(10)]
@@ -26,7 +32,7 @@ public class PrometeoCarController : MonoBehaviour
       public int maxSpeed = 90; //The maximum speed that the car can reach in km/h.
       [Range(10, 120)]
       public int maxReverseSpeed = 45; //The maximum speed that the car can reach while going on reverse in km/h.
-      [Range(1, 10)]
+      [Range(1, 100)]
       public int accelerationMultiplier = 2; // How fast the car can accelerate. 1 is a slow acceleration and 10 is the fastest.
       [Space(10)]
       [Range(10, 45)]
@@ -137,12 +143,12 @@ public class PrometeoCarController : MonoBehaviour
       IMPORTANT: The following variables should not be modified manually since their values are automatically given via script.
       */
       Rigidbody carRigidbody; // Stores the car's rigidbody.
-      float steeringAxis; // Used to know whether the steering wheel has reached the maximum value. It goes from -1 to 1.
+      public float steeringAxis; // Used to know whether the steering wheel has reached the maximum value. It goes from -1 to 1.
       float throttleAxis; // Used to know whether the throttle has reached the maximum value. It goes from -1 to 1.
       float driftingAxis;
       float localVelocityZ;
       float localVelocityX;
-      bool deceleratingCar;
+      public bool deceleratingCar;
       bool touchControlsSetup = false;
       /*
       The following variables are used to store information about sideways friction of the wheels (such as
@@ -287,82 +293,101 @@ public class PrometeoCarController : MonoBehaviour
       In this part of the code we specify what the car needs to do if the user presses W (throttle), S (reverse),
       A (turn left), D (turn right) or Space bar (handbrake).
       */
-      if (useTouchControls && touchControlsSetup){
+      if (!useAgentControl) {
+        if (useTouchControls && touchControlsSetup) {
 
-        if(throttlePTI.buttonPressed){
-          CancelInvoke("DecelerateCar");
-          deceleratingCar = false;
-          GoForward();
-        }
-        if(reversePTI.buttonPressed){
-          CancelInvoke("DecelerateCar");
-          deceleratingCar = false;
-          GoReverse();
-        }
+          if (throttlePTI.buttonPressed) {
+            CancelInvoke("DecelerateCar");
+            deceleratingCar = false;
+            GoForward();
+          }
 
-        if(turnLeftPTI.buttonPressed){
-          TurnLeft();
-        }
-        if(turnRightPTI.buttonPressed){
-          TurnRight();
-        }
-        if(handbrakePTI.buttonPressed){
-          CancelInvoke("DecelerateCar");
-          deceleratingCar = false;
-          Handbrake();
-        }
-        if(!handbrakePTI.buttonPressed){
-          RecoverTraction();
-        }
-        if((!throttlePTI.buttonPressed && !reversePTI.buttonPressed)){
-          ThrottleOff();
-        }
-        if((!reversePTI.buttonPressed && !throttlePTI.buttonPressed) && !handbrakePTI.buttonPressed && !deceleratingCar){
-          InvokeRepeating("DecelerateCar", 0f, 0.1f);
-          deceleratingCar = true;
-        }
-        if(!turnLeftPTI.buttonPressed && !turnRightPTI.buttonPressed && steeringAxis != 0f){
-          ResetSteeringAngle();
-        }
+          if (reversePTI.buttonPressed) {
+            CancelInvoke("DecelerateCar");
+            deceleratingCar = false;
+            GoReverse();
+          }
 
-      }else{
+          if (turnLeftPTI.buttonPressed) {
+            TurnLeft();
+          }
 
-        if(Input.GetKey(KeyCode.W)){
-          CancelInvoke("DecelerateCar");
-          deceleratingCar = false;
-          GoForward();
-        }
-        if(Input.GetKey(KeyCode.S)){
-          CancelInvoke("DecelerateCar");
-          deceleratingCar = false;
-          GoReverse();
-        }
+          if (turnRightPTI.buttonPressed) {
+            TurnRight();
+          }
 
-        if(Input.GetKey(KeyCode.A)){
-          TurnLeft();
-        }
-        if(Input.GetKey(KeyCode.D)){
-          TurnRight();
-        }
-        if(Input.GetKey(KeyCode.Space)){
-          CancelInvoke("DecelerateCar");
-          deceleratingCar = false;
-          Handbrake();
-        }
-        if(Input.GetKeyUp(KeyCode.Space)){
-          RecoverTraction();
-        }
-        if((!Input.GetKey(KeyCode.S) && !Input.GetKey(KeyCode.W))){
-          ThrottleOff();
-        }
-        if((!Input.GetKey(KeyCode.S) && !Input.GetKey(KeyCode.W)) && !Input.GetKey(KeyCode.Space) && !deceleratingCar){
-          InvokeRepeating("DecelerateCar", 0f, 0.1f);
-          deceleratingCar = true;
-        }
-        if(!Input.GetKey(KeyCode.A) && !Input.GetKey(KeyCode.D) && steeringAxis != 0f){
-          ResetSteeringAngle();
-        }
+          if (handbrakePTI.buttonPressed) {
+            CancelInvoke("DecelerateCar");
+            deceleratingCar = false;
+            Handbrake();
+          }
 
+          if (!handbrakePTI.buttonPressed) {
+            RecoverTraction();
+          }
+
+          if ((!throttlePTI.buttonPressed && !reversePTI.buttonPressed)) {
+            ThrottleOff();
+          }
+
+          if ((!reversePTI.buttonPressed && !throttlePTI.buttonPressed) && !handbrakePTI.buttonPressed &&
+              !deceleratingCar) {
+            InvokeRepeating("DecelerateCar", 0f, 0.1f);
+            deceleratingCar = true;
+          }
+
+          if (!turnLeftPTI.buttonPressed && !turnRightPTI.buttonPressed && steeringAxis != 0f) {
+            ResetSteeringAngle();
+          }
+
+        }
+        else {
+
+          if (Input.GetKey(KeyCode.W)) {
+            CancelInvoke("DecelerateCar");
+            deceleratingCar = false;
+            GoForward();
+          }
+
+          if (Input.GetKey(KeyCode.S)) {
+            CancelInvoke("DecelerateCar");
+            deceleratingCar = false;
+            GoReverse();
+          }
+
+          if (Input.GetKey(KeyCode.A)) {
+            TurnLeft();
+          }
+
+          if (Input.GetKey(KeyCode.D)) {
+            TurnRight();
+          }
+
+          if (Input.GetKey(KeyCode.Space)) {
+            CancelInvoke("DecelerateCar");
+            deceleratingCar = false;
+            Handbrake();
+          }
+
+          if (Input.GetKeyUp(KeyCode.Space)) {
+            RecoverTraction();
+          }
+
+          if ((!Input.GetKey(KeyCode.S) && !Input.GetKey(KeyCode.W))) {
+            ThrottleOff();
+          }
+
+          if ((!Input.GetKey(KeyCode.S) && !Input.GetKey(KeyCode.W)) && !Input.GetKey(KeyCode.Space) &&
+              !deceleratingCar) {
+            InvokeRepeating("DecelerateCar", 0f, 0.1f);
+            deceleratingCar = true;
+          }
+
+          if (!Input.GetKey(KeyCode.A) && !Input.GetKey(KeyCode.D) && steeringAxis != 0f) {
+            ResetSteeringAngle();
+          }
+
+        }
       }
 
 

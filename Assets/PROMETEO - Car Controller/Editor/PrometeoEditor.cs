@@ -13,6 +13,12 @@ public class PrometeoEditor : Editor{
   private SerializedObject SO;
   //
   //
+  //ML-Agent Control
+  //
+  //
+  private SerializedProperty useAgentControl;
+  //
+  //
   //CAR SETUP
   //
   //
@@ -78,7 +84,9 @@ public class PrometeoEditor : Editor{
   private void OnEnable(){
     prometeo = (PrometeoCarController)target;
     SO = new SerializedObject(target);
-
+    
+    useAgentControl = SO.FindProperty("useAgentControl");
+    
     maxSpeed = SO.FindProperty("maxSpeed");
     maxReverseSpeed = SO.FindProperty("maxReverseSpeed");
     accelerationMultiplier = SO.FindProperty("accelerationMultiplier");
@@ -123,19 +131,33 @@ public class PrometeoEditor : Editor{
   public override void OnInspectorGUI(){
 
     SO.Update();
-
+        
+    //
+    //
+    //ML-AGENT CONTROL
+    //
+    //
+    
     GUILayout.Space(25);
-    GUILayout.Label("CAR SETUP", EditorStyles.boldLabel);
+    GUILayout.Label("ML-AGENT CONTROL", EditorStyles.boldLabel);
     GUILayout.Space(10);
+    EditorGUILayout.PropertyField(useAgentControl, new GUIContent("Use Agent Control"));
+    GUILayout.Space(10);
+    
+    
     //
     //
     //CAR SETUP
     //
     //
-    //
+    
+    GUILayout.Space(25);
+    GUILayout.Label("CAR SETUP", EditorStyles.boldLabel);
+    GUILayout.Space(10);
+    
     maxSpeed.intValue = EditorGUILayout.IntSlider("Max Speed:", maxSpeed.intValue, 20, 190);
     maxReverseSpeed.intValue = EditorGUILayout.IntSlider("Max Reverse Speed:", maxReverseSpeed.intValue, 10, 120);
-    accelerationMultiplier.intValue = EditorGUILayout.IntSlider("Acceleration Multiplier:", accelerationMultiplier.intValue, 1, 10);
+    accelerationMultiplier.intValue = EditorGUILayout.IntSlider("Acceleration Multiplier:", accelerationMultiplier.intValue, 1, 100);
     maxSteeringAngle.intValue = EditorGUILayout.IntSlider("Max Steering Angle:", maxSteeringAngle.intValue, 10, 45);
     steeringSpeed.floatValue = EditorGUILayout.Slider("Steering Speed:", steeringSpeed.floatValue, 0.1f, 1f);
     brakeForce.intValue = EditorGUILayout.IntSlider("Brake Force:", brakeForce.intValue, 100, 600);

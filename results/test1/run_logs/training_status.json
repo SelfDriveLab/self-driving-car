@@ -1,0 +1,29 @@
+{
+    "ControlCar": {
+        "checkpoints": [
+            {
+                "steps": 6641,
+                "file_path": "results\\test1\\ControlCar\\ControlCar-6641.onnx",
+                "reward": -1.0,
+                "creation_time": 1746293803.750229,
+                "auxillary_file_paths": [
+                    "results\\test1\\ControlCar\\ControlCar-6641.pt"
+                ]
+            }
+        ],
+        "final_checkpoint": {
+            "steps": 6641,
+            "file_path": "results\\test1\\ControlCar.onnx",
+            "reward": -1.0,
+            "creation_time": 1746293803.750229,
+            "auxillary_file_paths": [
+                "results\\test1\\ControlCar\\ControlCar-6641.pt"
+            ]
+        }
+    },
+    "metadata": {
+        "stats_format_version": "0.3.0",
+        "mlagents_version": "1.1.0",
+        "torch_version": "2.2.2+cu121"
+    }
+}
